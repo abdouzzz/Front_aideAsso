@@ -250,7 +250,7 @@ async function seDeconnecter() {
     user.value = null;
   }
   sessionStorage.removeItem('jwt');
-  router.push({ name: 'tableau-de-bord' });
+  router.push({ name: 'accueil' });
 }
 
 onBeforeUnmount(() => {

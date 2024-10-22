@@ -2,7 +2,9 @@
   <div class="body">
     <div class="box">
       <div class="banner_high">
-        <img src="../assets/images/logo2.png" alt="" />
+        <router-link to="/">
+        <img src="../assets/images/Logo_aide_asso_footer.png" alt="" />
+       </router-link>
         <div class="language">
           <div class="flag" :class="{ active: isActive }" @click="isActive = !isActive">
             <img src="../assets/fr_flag.png" alt="" />
@@ -75,9 +77,9 @@ function addEmail(suffix: string) {
 async function login() {
   const response = await userService.loginUser(username.value, password.value);
   console.log(response);
-  if (response == false) {
+  if (response == true) {
     toast.add({ severity: 'success', summary: 'Succès', detail: 'Vous êtes connecté', life: 3000 });
-    router.push('/');
+    router.push('/tableau-de-bord');
   } else {
     toast.add({ severity: 'error', summary: 'Erreur', detail: response, life: 3000 });
   }

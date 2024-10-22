@@ -21,9 +21,10 @@ export function useUserService() {
     async loginUser(email: string, password: string) {
       try {
         const response = await userApi.loginUser(email, password);
+        console.log('response',response);
         if (response) {
-          sessionStorage.setItem('jwt', response.token);  // Suppose que `token` est renvoyé par l'API
-          return false;  // Renvoie `false` si la connexion a réussi
+          sessionStorage.setItem('jwt', response.id);  // Suppose que `token` est renvoyé par l'API
+          return true;  // Renvoie `false` si la connexion a réussi
         } else {
           return 'Erreur lors de la connexion. Identifiants incorrects.';
         }
@@ -43,7 +44,7 @@ export function useUserService() {
       try {
         const response = await userApi.createUserAccount(firstName, lastName, email, password, confirmPassword);
         if (response) {
-          sessionStorage.setItem('jwt', response.token);  // Stocke le token JWT (supposé renvoyé par l'API)
+          sessionStorage.setItem('jwt', response.id);  // Stocke le token JWT (supposé renvoyé par l'API)
           return false;  // Retourne `false` pour indiquer que la création de compte a réussi
         } else {
           return 'Échec de la création du compte. Vérifiez les informations saisies.';

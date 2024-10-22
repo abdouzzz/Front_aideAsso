@@ -9,6 +9,7 @@ export function useUserApi() {
     },
     async loginUser(email: string, password: string) {
       const res = await axiosInstance.post(`${ApiUrlUsers}/login`, { email, password });
+      console.log('res',res);
       return res.data.body;
     },
     async createUserAccount(
