@@ -1,0 +1,31 @@
+import axiosInstance from '@/config/AxiosConfig';
+import { ApiUrlUsers } from '@/constants/ApiUrls';
+
+export function useUserApi() {
+  return {
+    async getUserById(id: number) {
+      const res = await axiosInstance.get(`${ApiUrlUsers}/${id}`);
+      return res.data.body;
+    },
+    async loginUser(email: string, password: string) {
+      const res = await axiosInstance.post(`${ApiUrlUsers}/login`, { email, password });
+      return res.data.body;
+    },
+    async createUserAccount(
+      firstName: string,
+      lastName: string,
+      email: string,
+      password: string,
+      confirmPassword: string
+    ) {
+      const res = await axiosInstance.post(`${ApiUrlUsers}/register`, {
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+      });
+      return res.data.body;
+    },
+  };
+}
