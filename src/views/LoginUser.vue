@@ -1,4 +1,7 @@
 <template>
+  <router-link class="link-retour" :to="{ path: '/' }">
+      <PButton class="p-button-outlined btn-retour" icon="pi pi-arrow-left" label="Retour" />
+    </router-link>
   <div class="body">
     <div class="box">
       <div class="banner_high">

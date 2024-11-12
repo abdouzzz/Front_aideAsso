@@ -1,4 +1,7 @@
 <template>
+  <router-link class="link-retour" :to="{ path: '/' }">
+      <PButton class="p-button-outlined btn-retour" icon="pi pi-arrow-left" label="Retour" />
+    </router-link>
   <div class="body">
     <div class="box">
       <div class="banner_high">
@@ -114,7 +117,7 @@ function addEmail(suffix: string) {
 async function signup() {
   const response = await userService.createUserAccount(nom.value, prenom.value, mail.value, password.value, password_confirmation.value);
   console.log(response);
-  if (response == false) {
+  if (response == true) {
     toast.add({ severity: 'success', summary: 'Succès', detail: 'Vous êtes connecté', life: 3000 });
     router.push('/tableau-de-bord');
   } else {

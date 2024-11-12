@@ -43,9 +43,10 @@ export function useUserService() {
     ) {
       try {
         const response = await userApi.createUserAccount(firstName, lastName, email, password, confirmPassword);
+        console.log('test response',response);
         if (response) {
           sessionStorage.setItem('jwt', response.id);  // Stocke le token JWT (supposé renvoyé par l'API)
-          return false;  // Retourne `false` pour indiquer que la création de compte a réussi
+          return true;  
         } else {
           return 'Échec de la création du compte. Vérifiez les informations saisies.';
         }

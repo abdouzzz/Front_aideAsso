@@ -1,11 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '@/App.vue';
 import UserModel from '@/models/UserModel';
-import { ref } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 import { useUserService } from '@/composables/user/UserService';
 
 const userService = useUserService();
 const user = ref<UserModel | null>(null);
+
+// Définir le composant de manière asynchrone
+const TableauDeBord = defineAsyncComponent(() =>
+  import('@/views/TableauDeBord.vue')
+);
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,8 +29,8 @@ const router = createRouter({
         {
           path: '/tableau-de-bord',
           name: 'tableau-de-bord',
-          component: () => import('@/views/TableauDeBord.vue'),
-          meta: { requiresAuth: true },  // Nécessite une authentification
+          component: TableauDeBord,
+          meta: { requiresAuth: true },
         },
       ],
     },
