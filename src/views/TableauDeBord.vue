@@ -18,9 +18,7 @@
           </template>
           <template #footer>
             <div class="flex gap-4 mt-1">
-              <router-link to="/asso-detail">
-                <PButton :onClick="() => assoDetail(association.association_id)" label="Modifier" severity="secondary" outlined class="w-full" />
-              </router-link>
+              <PButton :onClick="() => assoDetail(association.association_id)" label="Modifier" severity="secondary" outlined class="w-full" />
             </div>
           </template>
         </Card>
@@ -233,8 +231,8 @@ const validateStep = async (callback: Function) => {
 
 async function assoDetail(id: number) {
   sessionStorage.setItem('idAsso', id.toString()); // Suppose que `token` est renvoyé par l'API
-  // router.push('/asso-detail');
-};
+  router.push('/asso-detail');
+}
 </script>
 
 <style scoped>
