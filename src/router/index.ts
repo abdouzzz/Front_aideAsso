@@ -12,6 +12,7 @@ const TableauDeBord = defineAsyncComponent(() =>
   import('@/views/TableauDeBord.vue')
 );
 
+const AssoDetail = defineAsyncComponent(() => import('@/views/asso-detail.vue'));
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,12 @@ const router = createRouter({
           path: '/tableau-de-bord',
           name: 'tableau-de-bord',
           component: TableauDeBord,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/asso-detail',
+          name: 'asso-detail',
+          component: AssoDetail,
           meta: { requiresAuth: true },
         },
       ],
@@ -52,7 +59,7 @@ const router = createRouter({
 });
 
 export function isAuthenticated() {
-  return !!sessionStorage.getItem('jwt');  // Vérifie si un token JWT est stocké
+  return !!sessionStorage.getItem('jwt'); // Vérifie si un token JWT est stocké
 }
 
 router.beforeEach(async (to, from, next) => {
@@ -81,10 +88,10 @@ async function fetchData() {
       console.log('Utilisateur connecté:', user.value);
     } catch (error) {
       console.error('Erreur lors de la récupération des données utilisateur:', error);
-      user.value = null;  // En cas d'erreur, réinitialise l'utilisateur
+      user.value = null; // En cas d'erreur, réinitialise l'utilisateur
     }
   } else {
-    user.value = null;  // Aucun utilisateur n'est connecté
+    user.value = null; // Aucun utilisateur n'est connecté
   }
 }
 

@@ -1,5 +1,5 @@
 import axiosInstance from '@/config/AxiosConfig';
-import { ApiUrlAssos,ApiUrlUsers } from '@/constants/ApiUrls';
+import { ApiUrlAssos, ApiUrlUsers } from '@/constants/ApiUrls';
 
 export function useAssoApi() {
   return {
@@ -27,9 +27,9 @@ export function useAssoApi() {
       const res = await axiosInstance.post(`${ApiUrlAssos}/add`, data);
       return res.data.body;
     },
-    async getAllAssociations(id:number) {
-        const res = await axiosInstance.get(`${ApiUrlUsers}/${id}/associations`);
-        return res.data.body;
-      }
+    async getAllAssociations(id: number) {
+      const res = await axiosInstance.get(`${ApiUrlUsers}/${id}/associations`);
+      return res.data.body;
+    },
   };
 }

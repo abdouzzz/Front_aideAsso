@@ -11,14 +11,17 @@
       <Breadcrumb :home="home" :model="fileAriane" />
     </div>
 
-    <button class="p-link layout-topbar-menu-button layout-topbar-button" v-styleclass="{
-      selector: '@next',
-      enterClass: 'hidden',
-      enterActiveClass: 'scalein',
-      leaveToClass: 'hidden',
-      leaveActiveClass: 'fadeout',
-      hideOnOutsideClick: true,
-    }">
+    <button
+      class="p-link layout-topbar-menu-button layout-topbar-button"
+      v-styleclass="{
+        selector: '@next',
+        enterClass: 'hidden',
+        enterActiveClass: 'scalein',
+        leaveToClass: 'hidden',
+        leaveActiveClass: 'fadeout',
+        hideOnOutsideClick: true,
+      }"
+    >
       <em class="pi pi-ellipsis-v"></em>
     </button>
     <ul class="layout-topbar-menu hidden lg:flex origin-top">
@@ -51,8 +54,7 @@
         </div>
         <OverlayPanel ref="userR">
           <div class="flex flex-column gap-3 w-28rem" v-if="user">
-            <div class="mb-4"
-              style="display: flex; justify-content: space-between; align-items: center; text-align: center">
+            <div class="mb-4" style="display: flex; justify-content: space-between; align-items: center; text-align: center">
               <span class="font-medium text-900 block">Réglages</span>
               <div>
                 <Badge v-if="user.email" :value="user.email" class="mr-2" style="color: #fff" />

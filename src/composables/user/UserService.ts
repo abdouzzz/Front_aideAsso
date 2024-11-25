@@ -8,9 +8,9 @@ export function useUserService() {
       try {
         const response = await userApi.getUserById(id);
         if (response) {
-          return response;  // Retourne les données utilisateur si l'appel est réussi
+          return response; // Retourne les données utilisateur si l'appel est réussi
         } else {
-          return 'Utilisateur non trouvé.';  // Gestion d'erreur : aucune donnée renvoyée
+          return 'Utilisateur non trouvé.'; // Gestion d'erreur : aucune donnée renvoyée
         }
       } catch (error) {
         console.error('Erreur lors de la récupération de l\'utilisateur :', error);
@@ -21,9 +21,9 @@ export function useUserService() {
     async loginUser(email: string, password: string) {
       try {
         const response = await userApi.loginUser(email, password);
-        console.log('response',response);
+        console.log('response', response);
         if (response) {
-          sessionStorage.setItem('jwt', response.id);  // Suppose que `token` est renvoyé par l'API
+          sessionStorage.setItem('jwt', response.id); // Suppose que `token` est renvoyé par l'API
           return true;  // Renvoie `false` si la connexion a réussi
         } else {
           return 'Erreur lors de la connexion. Identifiants incorrects.';

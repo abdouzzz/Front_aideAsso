@@ -73,7 +73,8 @@ export function useAssoService() {
       try {
         const response = await assoApi.getAllAssociations(id);
         if (response) {
-          return `liste des association trouver pour l'utilisateur:${id}`;
+          console.log(response);
+          return response;
         } else {
           return 'Échec de la recupereation association.';
         }

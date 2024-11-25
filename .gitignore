@@ -31,3 +31,4 @@ results
 *.njsproj
 *.sln
 *.sw?
+/src/views/Accueil.vue
