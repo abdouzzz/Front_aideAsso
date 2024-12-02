@@ -39,6 +39,18 @@ const router = createRouter({
           component: AssoDetail,
           meta: { requiresAuth: true },
         },
+        {
+          path: '/benevoles',
+          name: 'benevoles',
+          component: () => import('@/views/benevole.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/test',
+          name: 'test',
+          component: () => import('@/views/test.vue'),
+          meta: { requiresAuth: true },
+        },
       ],
     },
     {
