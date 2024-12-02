@@ -87,14 +87,14 @@ const menu = ref([
     icon: 'pi pi-fw pi-sitemap',
     items: [
       {
-        label: 'Général',
+        label: 'Informations',
         icon: 'pi pi-cog',
-        to: '/general',
+        to: '/asso-detail',
       },
       {
-        label: 'Participants',
+        label: 'Bénévoles',
         icon: 'pi pi-users',
-        to: '/participants',
+        to: '/benevoles',
       },
       {
         label: 'Classement',
