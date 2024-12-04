@@ -20,7 +20,7 @@
         :value="listeMembres"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 15, 25]"
@@ -34,7 +34,6 @@
         </template>
 
         <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-        <Column field="id" header="ID" sortable style="min-width: 5rem"></Column>
         <Column field="username" header="Username" sortable style="min-width: 5rem"></Column>
         <Column header="Image">
           <template #body="slotProps">
@@ -51,8 +50,12 @@
         <Column field="role" header="Rôle" sortable style="min-width: 12rem"></Column>
         <Column field="email" header="Mail" sortable style="min-width: 12rem"></Column>
         <Column field="date_adhesion" header="Date d'adhésion" sortable style="min-width: 12rem">
-          <template #body="slotProps">
+          <!-- <template #body="slotProps">
             salut
+          </template> -->
+          <template #body="{ data }">
+            <!-- {{formatDate("2024-04-10T22:00:00.000Z")}} -->
+            {{ formatDate(data.date_adhesion) }}
           </template>
         </Column>
         <Column field="est_actif" header="Activité" sortable style="min-width: 12rem">
@@ -208,7 +211,7 @@
         </div>
         <div>
           <label for="date_adhesion" class="block font-bold mb-3">Date d'adhésion</label>
-          <Calendar v-model="membre.date_adhesion" />
+          <Calendar v-model="membre.date_adhesion" dateFormat="dd/mm/yy" />
         </div>
         <div>
           <label for="est_actif" class="block font-bold mb-3">Activité</label>
@@ -326,7 +329,7 @@ const saveProduct = async () => {
     })),
   };
   try {
-    await MemberService.addMember(Number(sessionStorage.getItem('idAsso')), jsonOutput); // Use the combined object
+    await MemberService.addMember(Number(sessionStorage.getItem('idAsso')), jsonOutput);
     toast.add({
       severity: 'success',
       summary: 'Succès',
@@ -334,28 +337,11 @@ const saveProduct = async () => {
       life: 5000,
     });
     addMembreDialog.value = false;
-    // membre.value = {};
+    listeMembres.value = await AssoService.getMembersByAssoId(Number(sessionStorage.getItem('idAsso')));
   } catch (error) {
     // Handle error if needed
     console.error('Error adding members:', error);
   }
-  //   if (membre?.value.name?.trim()) {
-  //     if (membre.value.id) {
-  //       membre.value.inventoryStatus = membre.value.inventoryStatus.value ? membre.value.inventoryStatus.value : membre.value.inventoryStatus;
-  //       membres.value[findIndexById(membre.value.id)] = membre.value;
-  //       toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-  //     } else {
-  //       membre.value.id = createId();
-  //       membre.value.code = createId();
-  //       membre.value.image = 'membre-placeholder.svg';
-  //       membre.value.inventoryStatus = membre.value.inventoryStatus ? membre.value.inventoryStatus.value : 'INSTOCK';
-  //       membres.value.push(membre.value);
-  //       toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
-  //     }
-
-  //     editMembreDialog.value = false;
-  //     membre.value = {};
-  //   }
 };
 
 const editProduct = (prod) => {
@@ -372,6 +358,7 @@ const updateProduct = async () => {
       detail: "L'association a été modifiée avec succès.",
       life: 5000,
     });
+    listeMembres.value = await AssoService.getMembersByAssoId(Number(sessionStorage.getItem('idAsso')));
     editMembreDialog.value = false;
     membre.value = {};
   } catch (error) {
@@ -382,13 +369,21 @@ const updateProduct = async () => {
 
 const confirmDeleteProduct = (prod) => {
   membre.value = prod;
+  console.log(membre.value);
   deleteProductDialog.value = true;
 };
-const deleteProduct = () => {
-  membres.value = membres.value.filter((val) => val.id !== membre.value.id);
-  deleteProductDialog.value = false;
-  membre.value = {};
-  toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+const deleteProduct = async () => {
+  try {
+    await MemberService.deleteMember(Number(membre.value.id));
+    deleteProductDialog.value = false;
+    membre.value = {};
+    listeMembres.value = await AssoService.getMembersByAssoId(Number(sessionStorage.getItem('idAsso')));
+    toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+
+  } catch (error) {
+    // Handle error if needed
+    console.error('Error creating association:', error);
+  }
 };
 const findIndexById = (id) => {
   let index = -1;
@@ -410,19 +405,37 @@ const createId = () => {
 };
 const confirmDeleteSelected = () => {
   deleteProductsDialog.value = true;
+  console.log(selectedProducts.value)
 };
 
-const formatDate = (date) => {
+const formatDate = (date: Date | string | number | null | undefined): string => {
   if (!date) return '';
-  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-  return new Intl.DateTimeFormat('fr-FR', options).format(date);
+
+  const parsedDate = new Date(date); 
+  if (isNaN(parsedDate.getTime())) return '';
+  const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  return new Intl.DateTimeFormat('fr-FR', options).format(parsedDate);
 };
 
-const deleteSelectedProducts = () => {
-  membres.value = membres.value.filter((val) => !selectedProducts.value.includes(val));
+const deleteSelectedProducts = async () => {
+  const jsonOutput = {
+    deletedMembers: selectedProducts.value.map((user: any) => ({
+      id_user: user.id,
+    })),
+  };
+    console.log(jsonOutput);
+  try {
+    console.log("try", jsonOutput);
+    await MemberService.deleteMembers(jsonOutput);
+    listeMembres.value = await AssoService.getMembersByAssoId(Number(sessionStorage.getItem('idAsso')));
   deleteProductsDialog.value = false;
   selectedProducts.value = null;
   toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+  } catch (error) {
+    // Handle error if needed
+    console.error('Error adding members:', error);
+  }
+ 
 };
 
 const getStatusLabel = (status) => {

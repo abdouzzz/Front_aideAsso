@@ -26,5 +26,32 @@ export function useMemberService() {
         return "Erreur lors de l'ajout des membres.";
       }
     },
+    async deleteMember(id: number){
+      try {
+        const response = await MemberApi.deleteMember(id);
+        if(response){
+          return `Membre suppprimé avec succès`
+        } else {
+          return `Echec de la suppression du membre`
+        }
+      } catch (error) {
+        console.error("Erreur lors de la suppression du membre  :", error);
+        return "Erreur lors de la suppression du membre.";
+      }
+    },
+    async deleteMembers(data: any){
+      console.log(data);
+      try {
+        const response = await MemberApi.deleteMembers(data);
+        if(response){
+          return `Membres suppprimés avec succès`
+        } else {
+          return `Echec de la suppression des membres`
+        }
+      } catch (error) {
+        console.error("Erreur lors de la suppression des membres  :", error);
+        return "Erreur lors de la suppression des membres.";
+      }
+    }
   };
 }

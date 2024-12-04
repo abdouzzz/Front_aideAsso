@@ -15,5 +15,10 @@ export function useMemberApi() {
       const res = await axiosInstance.delete(`${ApiUrlMembres}/delete/${id}`);
       return res.data.message;
     },
+    async deleteMembers(deletedMembers: any){
+      console.log(deletedMembers);
+      const res = await axiosInstance.post(`${ApiUrlMembres}/delete`, deletedMembers);
+      return res.data.message;
+    },
   };
 }
