@@ -13,6 +13,8 @@ const TableauDeBord = defineAsyncComponent(() =>
 );
 
 const AssoDetail = defineAsyncComponent(() => import('@/views/asso-detail.vue'));
+const TresoDetail = defineAsyncComponent(() => import('@/views/asso-tresorerie.vue'));
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +45,12 @@ const router = createRouter({
           path: '/benevoles',
           name: 'benevoles',
           component: () => import('@/views/benevole.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/tresorie-detail',
+          name: 'tresorie-detail',
+          component: TresoDetail,
           meta: { requiresAuth: true },
         },
         {
