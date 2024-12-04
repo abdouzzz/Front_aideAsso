@@ -94,12 +94,12 @@ const menu = ref([
       {
         label: 'Bénévoles',
         icon: 'pi pi-users',
-        to: '/benevoles',
+        to: '/asso-benevoles',
       },
       {
         label: 'Classement',
         icon: 'pi pi-sitemap',
-        to: '/classement',
+        to: '/tresorerie-detail',
       },
       {
         label: 'Calendrier',
