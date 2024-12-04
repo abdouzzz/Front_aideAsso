@@ -1,6 +1,6 @@
 <template>
   <div class="layout-topbar">
-    <button v-if="!isHomePage && user" class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle">
+    <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle">
       <em :class="iconeBouton"></em>
     </button>
     <router-link to="/" class="layout-topbar-logo">
@@ -122,6 +122,8 @@ const op = ref();
 const userR = ref();
 const password = ref('');
 
+const menuSidebarIsActive = ref(sessionStorage.getItem("idAsso") ? true : false);
+  
 const home = ref({
   icon: 'pi pi-home',
 });

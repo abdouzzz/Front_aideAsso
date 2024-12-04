@@ -47,6 +47,9 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Checkbox from 'primevue/checkbox';
 import Textarea from 'primevue/textarea';
+import Toolbar from 'primevue/toolbar';
+import ToggleButton from 'primevue/togglebutton';
+import Tag from 'primevue/tag';
 
 import 'primeflex/primeflex.css';
 import 'primevue/resources/primevue.css';
@@ -111,5 +114,8 @@ app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
 app.component('Checkbox', Checkbox);
 app.component('PTextarea', Textarea);
+app.component('Toolbar', Toolbar);
+app.component('ToggleButton', ToggleButton);
+app.component('Tag', Tag);
 
 app.mount('#app');

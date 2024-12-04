@@ -7,7 +7,12 @@
       <div class="grid-item" v-for="association in associationListe" :key="association.association_id">
         <Card style="width: 100%; overflow: hidden; height: 100%">
           <template #header>
-            <img alt="user header" src="https://www.powertrafic.fr/wp-content/uploads/2023/04/image-ia-exemple.png" />
+            <img
+              v-if="association.logo"
+              :src="'data:image/png;base64,' + association.logo"
+              alt="Tournament Image"
+              :style="{ width: '50%', height: 'auto' }"
+            />
           </template>
           <template #title>{{ association.nom }}</template>
           <template #subtitle>{{ association.date_pub_jo }}</template>
@@ -18,7 +23,7 @@
           </template>
           <template #footer>
             <div class="flex gap-4 mt-1">
-              <PButton :onClick="() => assoDetail(association.association_id)" label="Modifier" severity="secondary" outlined class="w-full" />
+              <PButton @click="assoDetail(association.association_id)" label="Modifier" severity="secondary" outlined class="w-full" />
             </div>
           </template>
         </Card>
@@ -34,17 +39,25 @@
           <p>Toutes les données peuvent être modifiées ultérieurement.</p>
         </div>
         <div class="flex-1 flex flex-column gap-2 mt-3">
-          <label for="numeroSirenRNA">Numéro SIREN ou RNA</label>
-          <InputText v-model="numeroSirenRNA" id="numeroSirenRNA" placeholder="Entrez le SIREN ou RNA" @blur="fetchAssociationData" />
+          <label for="newAssociation.numero_rna">Numéro SIREN ou RNA</label>
+          <InputText v-model="newAssociation.numero_rna" id="newAssociation.numero_rna" placeholder="Entrez le SIREN ou RNA" @blur="fetchAssociationData" />
         </div>
         <!-- Automatically fill in association data after fetching -->
         <div v-if="associationData" class="flex-1 flex flex-column gap-2 mt-3">
           <label for="associationName">Nom de l'association</label>
           <InputText v-model="newAssociation.nom" id="associationName" :disabled="false" />
+          <label for="associationLogo">Logo de l'association</label>
+          <FileUpload
+            v-model="newAssociation.logo"
+            :multiple="false"
+            accept="image/*"
+            :maxFileSize="1000000000000"
+            @select="onSelectedFile($event)"
+          />
           <label for="associationDescription">Description</label>
-          <InputText v-model="newAssociation.description" id="associationDescription" :disabled="true" />
+          <InputText v-model="newAssociation.description" id="associationDescription" :disabled="false" />
           <label for="associationEmail">Email</label>
-          <InputText v-model="newAssociation.email" id="associationEmail" :disabled="true" />
+          <InputText v-model="newAssociation.email" id="associationEmail" :disabled="false" />
           <label for="associationTelephone">Téléphone</label>
           <InputText v-model="newAssociation.telephone" id="associationTelephone" :disabled="false" />
           <label for="associationPageWeb">Page web</label>
@@ -106,6 +119,7 @@ const associationListe = ref<Association[]>([]);
 const newAssociation = ref<Association>({
   id: 0, // L'ID sera défini après la création
   nom: '',
+  logo: '',
   numero_rna: '',
   numero_siren: '',
   page_web_url: '',
@@ -116,7 +130,6 @@ const newAssociation = ref<Association>({
   user_id: Number(sessionStorage.getItem('jwt')) || 0, // L'ID utilisateur est récupéré du sessionStorage
 });
 
-const numeroSirenRNA = ref('');
 const associationData = ref<any>(null); // Stocke les données de l'association récupérées via l'API
 
 async function fetchData() {
@@ -134,7 +147,8 @@ async function fetchData() {
 }
 
 watch(
-  () => sessionStorage.getItem('jwt'), async () => {
+  () => sessionStorage.getItem('jwt'),
+  async () => {
     await fetchData();
   }
 );
@@ -162,11 +176,11 @@ const prevStep = () => {
 };
 
 const fetchAssociationData = async () => {
-  if (numeroSirenRNA.value) {
+  if (newAssociation.value.numero_rna) {
     isLoading.value = true;
     try {
       // Récupération des données d'association via l'API gouvernementale
-      const response = await axios.get(`https://siva-integ1.cegedim.cloud/apim/api-asso/api/structure/${numeroSirenRNA.value}`);
+      const response = await axios.get(`https://siva-integ1.cegedim.cloud/apim/api-asso/api/structure/${newAssociation.value.numero_rna}`);
       if (response.data) {
         const data = response.data;
         associationData.value = data;
@@ -198,7 +212,7 @@ const saveAssociation = async () => {
     ...newAssociation.value, // Spread the properties from newAssociation.value
     user_id: sessionStorage.getItem('jwt'), // Add user_id to the merged object
   };
-
+  console.log(assoAndUser);
   try {
     await associationService.createAssociation(assoAndUser); // Use the combined object
     toast.add({
@@ -209,7 +223,7 @@ const saveAssociation = async () => {
     });
 
     // Fetch all associations and update the list
-    associationListe.value = await associationService.getAllAssociations();
+    associationListe.value = await associationService.getAllAssociations(Number(assoAndUser.user_id));
     resetDialog(); // Reset the dialog after successful creation
   } catch (error) {
     // Handle error if needed
@@ -232,6 +246,27 @@ const validateStep = async (callback: Function) => {
 async function assoDetail(id: number) {
   sessionStorage.setItem('idAsso', id.toString()); // Suppose que `token` est renvoyé par l'API
   router.push('/asso-detail');
+}
+
+function onSelectedFile(event: any) {
+  const file = event.files[0];
+
+  const reader = new FileReader();
+
+  reader.onloadend = function () {
+    // Convertir le Blob en une chaîne de caractères
+    const base64String = reader?.result as string | null;
+
+    if (base64String) {
+      const [, data] = base64String.split(',');
+      // Enregistrer la chaîne de caractères dans votre objet ou l'envoyer au serveur
+      newAssociation.value.logo = data;
+      console.log(newAssociation.value.logo);
+    }
+  };
+
+  // Lire le contenu du fichier en tant que Blob
+  reader.readAsDataURL(file);
 }
 </script>
 

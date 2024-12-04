@@ -3,6 +3,10 @@ import { ApiUrlUsers } from '@/constants/ApiUrls';
 
 export function useUserApi() {
   return {
+    async getUsers() {
+      const res = await axiosInstance.get(`${ApiUrlUsers}`);
+      return res.data.body;
+    },
     async getUserById(id: number) {
       const res = await axiosInstance.get(`${ApiUrlUsers}/${id}`);
       return res.data.body;
