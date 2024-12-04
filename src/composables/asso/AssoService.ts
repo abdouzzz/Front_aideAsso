@@ -82,6 +82,33 @@ export function useAssoService() {
         console.error('Erreur lors de la recupereation des associations :', error);
         return 'Erreur lors de la création de l\'association.';
       }
-    }
+    },
+    async saveTresorieAsso(data: any) {
+      try {
+        const response = await assoApi.saveTresorieAsso(data);
+        if (response && response.id_association) {
+          return `Tresorie créée avec succès. ID: ${response.id}`;
+        } else {
+          return 'Échec de la création de la tresorie.';
+        }
+      } catch (error) {
+        console.error('Erreur lors de la création de la tresorie :', error);
+        return 'Erreur lors de la création de la tresorie.';
+      }
+    },
+    async getAllTresorieByAssociations(id: number) {
+      try {
+        const response = await assoApi.getAllTresorieByAssociations(id);
+        if (response) {
+          console.log(response);
+          return response;
+        } else {
+          return 'Échec de la recupereation tresorie.';
+        }
+      } catch (error) {
+        console.error('Erreur lors de la recupereation de la tresorie :', error);
+        return 'Erreur lors de la création de la Tresorie.';
+      }
+    },
   };
 }
