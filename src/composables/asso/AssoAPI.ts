@@ -38,6 +38,10 @@ export function useAssoApi() {
     async getAllTresorieByAssociations(id: number){
       const res = await axiosInstance.get(`${ApiUrlAssos}/${id}/tresorerie`);
       return res.data.body;
+    },
+    async getAllAssociation(){
+      const res = await axiosInstance.get(`${ApiUrlAssos}`);
+      return res.data.body;
     }
   };
 }

@@ -11,17 +11,34 @@
       <Breadcrumb :home="home" :model="fileAriane" />
     </div>
 
-    <button
-      class="p-link layout-topbar-menu-button layout-topbar-button"
-      v-styleclass="{
-        selector: '@next',
-        enterClass: 'hidden',
-        enterActiveClass: 'scalein',
-        leaveToClass: 'hidden',
-        leaveActiveClass: 'fadeout',
-        hideOnOutsideClick: true,
-      }"
-    >
+    <div class="flex justify-center ml-8">
+      <AutoComplete v-model="associationSelected" optionLabel="nom" placeholder="Chercher une association ..."
+        :suggestions="associationFiltred" @complete="search">
+        <template #option="slotProps">
+          <router-link :to="`/asso-search-detail/${slotProps.option.id}`">
+            <div class="flex items-center space-x-2">
+              <img v-if="slotProps.option.logo" :src="'data:image/png;base64,' + slotProps.option.logo"
+                :alt="slotProps.option.nom" style="width: 15px;" class="mr-3" />
+              <div class="text-lg font-medium">{{ slotProps.option.nom }}</div> <!-- Texte plus grand -->
+            </div>
+          </router-link>
+
+
+        </template>
+        <template #header>
+          <div class="font-medium px-3 py-2">Associations disponible</div>
+        </template>
+      </AutoComplete>
+    </div>
+
+    <button class="p-link layout-topbar-menu-button layout-topbar-button" v-styleclass="{
+      selector: '@next',
+      enterClass: 'hidden',
+      enterActiveClass: 'scalein',
+      leaveToClass: 'hidden',
+      leaveActiveClass: 'fadeout',
+      hideOnOutsideClick: true,
+    }">
       <em class="pi pi-ellipsis-v"></em>
     </button>
     <ul class="layout-topbar-menu hidden lg:flex origin-top">
@@ -54,7 +71,8 @@
         </div>
         <OverlayPanel ref="userR">
           <div class="flex flex-column gap-3 w-28rem" v-if="user">
-            <div class="mb-4" style="display: flex; justify-content: space-between; align-items: center; text-align: center">
+            <div class="mb-4"
+              style="display: flex; justify-content: space-between; align-items: center; text-align: center">
               <span class="font-medium text-900 block">Réglages</span>
               <div>
                 <Badge v-if="user.email" :value="user.email" class="mr-2" style="color: #fff" />
@@ -110,8 +128,11 @@ import router from '@/router';
 import { MenuItem } from 'primevue/menuitem';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
+import { Association } from '@/models/AssociationModel';
+import { useAssoService } from './composables/asso/AssoService';
 
 const confirm = useConfirm();
+const associationService = useAssoService();
 const toast = useToast();
 const route = useRoute();
 const userService = useUserService();
@@ -121,9 +142,27 @@ const jwt = ref(false);
 const op = ref();
 const userR = ref();
 const password = ref('');
+const associationListe = ref<Association[]>([]);
+const associationSelected = ref<Association>();
+const associationFiltred = ref<Association[]>([]);
+
+const search = (event) => {
+  setTimeout(() => {
+    if (!event.query.trim().length) {
+      associationFiltred.value = [...associationListe.value];
+    } else {
+      associationFiltred.value = associationListe.value.filter((asso: Association) => {
+        return asso.nom.toLowerCase().includes(event.query.toLowerCase());
+      });
+    }
+  }, 250);
+}
+
+
+
 
 const menuSidebarIsActive = ref(sessionStorage.getItem("idAsso") ? true : false);
-  
+
 const home = ref({
   icon: 'pi pi-home',
 });
@@ -181,6 +220,11 @@ const confirmerDeconnexion = (event: any) => {
     },
   });
 };
+
+onMounted(async () => {
+  associationListe.value = await associationService.getAllAssociation();
+  console.log('asso', associationListe.value);
+});
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', storeWindowInnerWidth);
@@ -278,18 +322,23 @@ onBeforeUnmount(() => {
   justify-content: space-around;
   font-size: 5rem;
 }
+
 .layout-topbar-logo {
   display: flex;
   align-items: left;
   justify-content: left;
-  padding: 0.5rem;  /* Un petit espace autour du logo */
+  padding: 0.5rem;
+  /* Un petit espace autour du logo */
 }
 
 .logo-image {
-  width: auto;         /* Garde les proportions d'origine du logo */
-  max-width: 100%;      /* Le logo s'adapte à la taille du conteneur */
-  height: 4rem;         /* Définit une hauteur fixe pour le logo */
-  object-fit: contain;  /* S'assure que l'image reste contenue dans le conteneur */
+  width: auto;
+  /* Garde les proportions d'origine du logo */
+  max-width: 100%;
+  /* Le logo s'adapte à la taille du conteneur */
+  height: 4rem;
+  /* Définit une hauteur fixe pour le logo */
+  object-fit: contain;
+  /* S'assure que l'image reste contenue dans le conteneur */
 }
-
 </style>

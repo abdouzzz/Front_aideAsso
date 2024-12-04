@@ -2,35 +2,39 @@
   <div class="btn-top-association">
     <PButton label="Nouvelle association" icon="pi pi-plus" iconPos="right" @click="showDialog = true" />
   </div>
-  <div class="container" v-if="!isLoading">
+  <div class="container mt-4" v-if="!isLoading">
     <div class="grid-container">
       <div class="grid-item" v-for="association in associationListe" :key="association.association_id">
         <Card style="width: 100%; overflow: hidden; height: 100%">
           <template #header>
-            <img
-              v-if="association.logo"
-              :src="'data:image/png;base64,' + association.logo"
-              alt="Tournament Image"
-              :style="{ width: '50%', height: 'auto' }"
-            />
+            <div class="flex align-items-center gap-4 p-3">
+              <img v-if="association.logo" :src="'data:image/png;base64,' + association.logo" alt="Tournament Logo"
+                style="width: 40px;border-radius: 8px;" />
+              <h2 style="margin: 0; font-size: 1.5rem; color: #333; font-weight: bold;">
+                {{ association.nom }}
+              </h2>
+            </div>
           </template>
-          <template #title>{{ association.nom }}</template>
-          <template #subtitle>{{ association.date_pub_jo }}</template>
+          <template #subtitle>
+            <span style="font-size: 0.9rem; color: #666;">{{ association.date_pub_jo }}</span>
+          </template>
           <template #content>
-            <p class="m-0 capitalize">
+            <p style="font-size: 1rem; color: #555; line-height: 1.5; margin: 10px 0;">
               {{ association.description.slice(0, 200) + '...' }}
             </p>
           </template>
           <template #footer>
-            <div class="flex gap-4 mt-1">
-              <PButton @click="assoDetail(association.association_id)" label="Modifier" severity="secondary" outlined class="w-full" />
+            <div class="flex justify-content-end p-3">
+              <PButton @click="assoDetail(association.association_id)" label="En savoir plus" severity="secondary"
+                outlined style="font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 5px" />
             </div>
           </template>
         </Card>
       </div>
     </div>
     <!-- Dialog for creating new association -->
-    <PDialog v-model:visible="showDialog" class="flex-1 mx-5 md:flex-none custom-dialog" header="Nouvelle association" @hide="resetDialog">
+    <PDialog v-model:visible="showDialog" class="flex-1 mx-5 md:flex-none custom-dialog" header="Nouvelle association"
+      @hide="resetDialog">
       <Steps :model="steps" v-model:activeStep="active" />
       <!-- Step 1: Basic information -->
       <div v-if="active === 0">
@@ -40,20 +44,16 @@
         </div>
         <div class="flex-1 flex flex-column gap-2 mt-3">
           <label for="newAssociation.numero_rna">Numéro SIREN ou RNA</label>
-          <InputText v-model="newAssociation.numero_rna" id="newAssociation.numero_rna" placeholder="Entrez le SIREN ou RNA" @blur="fetchAssociationData" />
+          <InputText v-model="newAssociation.numero_rna" id="newAssociation.numero_rna"
+            placeholder="Entrez le SIREN ou RNA" @blur="fetchAssociationData" />
         </div>
         <!-- Automatically fill in association data after fetching -->
         <div v-if="associationData" class="flex-1 flex flex-column gap-2 mt-3">
           <label for="associationName">Nom de l'association</label>
           <InputText v-model="newAssociation.nom" id="associationName" :disabled="false" />
           <label for="associationLogo">Logo de l'association</label>
-          <FileUpload
-            v-model="newAssociation.logo"
-            :multiple="false"
-            accept="image/*"
-            :maxFileSize="1000000000000"
-            @select="onSelectedFile($event)"
-          />
+          <FileUpload v-model="newAssociation.logo" :multiple="false" accept="image/*" :maxFileSize="1000000000000"
+            @select="onSelectedFile($event)" />
           <label for="associationDescription">Description</label>
           <InputText v-model="newAssociation.description" id="associationDescription" :disabled="false" />
           <label for="associationEmail">Email</label>
@@ -127,6 +127,7 @@ const newAssociation = ref<Association>({
   email: '',
   telephone: '',
   date_pub_jo: new Date(),
+  adresse: '',
   user_id: Number(sessionStorage.getItem('jwt')) || 0, // L'ID utilisateur est récupéré du sessionStorage
 });
 
@@ -192,6 +193,14 @@ const fetchAssociationData = async () => {
         newAssociation.value.telephone = data.coordonnees.telephone || '';
         newAssociation.value.page_web_url = data.page_web_url || '';
         newAssociation.value.date_pub_jo = new Date(data.identite.date_pub_jo) || new Date();  // Récupère la date de publication
+        newAssociation.value.adresse = [
+          data.coordonnees.adresse_siege.num_voie,
+          data.coordonnees.adresse_siege.type_voie,
+          data.coordonnees.adresse_siege.voie,
+          data.coordonnees.adresse_siege.cp,
+          data.coordonnees.adresse_siege.commune
+        ].join(' ');
+
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des données de l\'association:', error);
@@ -274,23 +283,28 @@ function onSelectedFile(event: any) {
 /* Grille responsive avec 3 colonnes */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(1, 1fr); /* Par défaut, une colonne */
-  gap: 16px; /* Espacement entre les éléments de la grille */
+  grid-template-columns: repeat(1, 1fr);
+  /* Par défaut, une colonne */
+  gap: 16px;
+  /* Espacement entre les éléments de la grille */
 }
 
 @media (min-width: 640px) {
   .grid-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur les écrans moyens (sm) */
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 colonnes sur les écrans moyens (sm) */
   }
 }
 
 @media (min-width: 1024px) {
   .grid-container {
-    grid-template-columns: repeat(3, 1fr); /* 3 colonnes sur les écrans larges (lg) */
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 colonnes sur les écrans larges (lg) */
   }
 }
 
 .grid-item {
-  width: 100%; /* Les éléments prennent toute la largeur de leur colonne */
+  width: 100%;
+  /* Les éléments prennent toute la largeur de leur colonne */
 }
 </style>

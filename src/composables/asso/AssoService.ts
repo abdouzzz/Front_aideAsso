@@ -110,5 +110,19 @@ export function useAssoService() {
         return 'Erreur lors de la création de la Tresorie.';
       }
     },
+    async getAllAssociation() {
+      try {
+        const response = await assoApi.getAllAssociation();
+        if (response) {
+          console.log(response);
+          return response;
+        } else {
+          return 'Échec de la recupereation association.';
+        }
+      } catch (error) {
+        console.error('Erreur lors de la recupereation des associations :', error);
+        return 'Erreur lors de la création de l\'association.';
+      }
+    },
   };
 }

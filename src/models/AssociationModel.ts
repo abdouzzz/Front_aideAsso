@@ -9,4 +9,5 @@ export default interface Association {
   telephone: string; // Numéro de téléphone de l'association
   date_pub_jo: Date;
   user_id: number;
+  adresse: string;
 }
