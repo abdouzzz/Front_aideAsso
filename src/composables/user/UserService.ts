@@ -4,6 +4,19 @@ const userApi = useUserApi();
 
 export function useUserService() {
   return {
+    async getUsers() {
+      try {
+        const response = await userApi.getUsers();
+        if (response) {
+          return response; // Retourne les données utilisateur si l'appel est réussi
+        } else {
+          return 'Aucun utilisateur trouvé.'; // Gestion d'erreur : aucune donnée renvoyée
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération de l\'utilisateur :', error);
+        return 'Erreur lors de la récupération des données utilisateur.';
+      }
+    },
     async getUserById(id: number) {
       try {
         const response = await userApi.getUserById(id);
