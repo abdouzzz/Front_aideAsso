@@ -71,6 +71,7 @@
   
         <Column field="date_operation" header="Date" style="min-width: 12rem">
           <template #body="{ data }">
+            {{data.date_operation}}
             {{ formatDate(data.date_operation) }}
           </template>
           <template #filter="{ filterModel, filterCallback }">
@@ -89,7 +90,7 @@
       </DataTable>
   
       <!-- Dialogue pour ajouter une transaction -->
-      <PDialog header="Ajouter une transaction" :visible.sync="showDialog" :modal="true" :closable="false" :style="{ width: '50vw' }">
+      <PDialog header="Ajouter une transaction" v-model:visible="showDialog" :modal="true" :closable="false" :style="{ width: '50vw' }">
         <div class="p-fluid">
           <div class="field">
             <label for="nom_transaction">Nom de la transaction</label>
@@ -116,7 +117,7 @@
     </div>
   </template>
   
-  <script setup>
+<script setup>
   import { ref, onMounted, computed } from 'vue';
   import { useAssoService } from '@/composables/asso/AssoService';
   import { FilterMatchMode } from '@primevue/core/api';
@@ -268,9 +269,9 @@
       alert('Veuillez remplir tous les champs.');
     }
   };
-  </script>
+</script>
   
-  <style scoped>
-  /* Ajoutez ici vos styles spécifiques si nécessaire */
-  </style>
+<style scoped>
+/* Ajoutez ici vos styles spécifiques si nécessaire */
+</style>
   
