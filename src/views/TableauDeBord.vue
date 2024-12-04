@@ -51,9 +51,6 @@
         <div v-if="associationData" class="flex-1 flex flex-column gap-2 mt-3">
           <label for="associationName">Nom de l'association</label>
           <InputText v-model="newAssociation.nom" id="associationName" :disabled="false" />
-          <label for="associationLogo">Logo de l'association</label>
-          <FileUpload v-model="newAssociation.logo" :multiple="false" accept="image/*" :maxFileSize="1000000000000"
-            @select="onSelectedFile($event)" />
           <label for="associationDescription">Description</label>
           <InputText v-model="newAssociation.description" id="associationDescription" :disabled="false" />
           <label for="associationEmail">Email</label>
@@ -64,28 +61,34 @@
           <InputText v-model="newAssociation.page_web_url" id="associationPageWeb" :disabled="false" />
           <label for="associationDatePubJO">Date de publication JO</label>
           <InputText v-model="newAssociation.date_pub_jo" id="associationDatePubJO" :disabled="true" />
+          <label for="associationAdresse">Adresse</label>
+          <AutoComplete v-model="newAssociation.adresse" optionLabel="" id="associationAdresse" :disabled="false"
+            :suggestions="filteredAddresses" @complete="fetchAddresses" />
         </div>
-        <div class="p-dialog-footer mt-3">
-          <PButton label="Annuler" icon="pi pi-times" class="p-button-text" @click="resetDialog" />
-          <PButton label="Suivant" icon="pi pi-arrow-right" @click="validateStep(nextStep)" />
-        </div>
+
       </div>
-      <!-- Step 2: Logo -->
-      <div v-if="active === 1">
-        <div class="flex-1 flex flex-column gap-2 mt-3">
-          <h2>Définissez le logo</h2>
-          <p>Ajoutez un logo pour votre association (optionnel).</p>
-        </div>
-        <div class="flex-1 flex flex-column gap-2 mt-3">
-          <label for="associationLogo">Logo</label>
-          <InputText v-model="newAssociation.logo" id="associationLogo" />
-        </div>
-        <div class="p-dialog-footer mt-3">
-          <PButton label="Précédent" icon="pi pi-arrow-left" @click="prevStep" class="p-button-text" />
-          <PButton label="Enregistrer" icon="pi pi-check" @click="validateStep(saveAssociation)" />
-        </div>
+      <div class="p-dialog-footer mt-3" v-if="active === 0">
+        <PButton label="Annuler" icon="pi pi-times" class="p-button-text" @click="resetDialog" />
+        <PButton label="Suivant" icon="pi pi-arrow-right" @click="validateStep(nextStep)" />
       </div>
-    </PDialog>
+  
+  <!-- Step 2: Logo -->
+  <div v-if="active === 1">
+    <div class="flex-1 flex flex-column gap-2 mt-3">
+      <h2>Définissez le logo</h2>
+      <p>Ajoutez un logo pour votre association (optionnel).</p>
+    </div>
+    <div class="flex-1 flex flex-column gap-2 mt-3">
+      <label for="associationLogo">Logo de l'association</label>
+          <FileUpload v-model="newAssociation.logo" :multiple="false" accept="image/*" :maxFileSize="1000000000000"
+            @select="onSelectedFile($event)" />
+    </div>
+    <div class="p-dialog-footer mt-3">
+      <PButton label="Précédent" icon="pi pi-arrow-left" @click="prevStep" class="p-button-text" />
+      <PButton label="Enregistrer" icon="pi pi-check" @click="validateStep(saveAssociation)" />
+    </div>
+  </div>
+  </PDialog>
   </div>
   <Toast />
   <div class="spinner-container" v-if="isLoading">
@@ -116,6 +119,7 @@ const steps = [{ label: '' }, { label: '' }];
 const user = ref<UserModel | null>(null);
 
 const associationListe = ref<Association[]>([]);
+const filteredAddresses = ref([]);
 const newAssociation = ref<Association>({
   id: 0, // L'ID sera défini après la création
   nom: '',
@@ -132,6 +136,31 @@ const newAssociation = ref<Association>({
 });
 
 const associationData = ref<any>(null); // Stocke les données de l'association récupérées via l'API
+
+async function fetchAddresses(event) {
+  setTimeout(async () => {
+    if (!event.query.trim().length) {
+      // Réinitialiser la liste des adresses filtrées si la recherche est vide
+      filteredAddresses.value = [];
+    } else if (event.query.length > 2) {
+      try {
+        const response = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(event.query)}`);
+        const results = response.data.features;
+
+        // Mettre à jour la liste des adresses filtrées
+        filteredAddresses.value = results.map(feature => feature.properties.label);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des adresses:', error);
+      }
+    } else {
+      // Réinitialiser la liste si la chaîne de recherche est trop courte
+      filteredAddresses.value = [];
+    }
+  }, 250); // Temporisation de 250 ms pour réduire la fréquence des requêtes
+}
+
+
+
 
 async function fetchData() {
   const jwt = sessionStorage.getItem('jwt');
