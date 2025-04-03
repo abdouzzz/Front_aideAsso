@@ -7,6 +7,10 @@ export function useAssoApi() {
       const res = await axiosInstance.get(`${ApiUrlAssos}/id/${id}`);
       return res.data.body;
     },
+    async getAssociationsByCp(cp: number) {
+      const res = await axiosInstance.get(`${ApiUrlAssos}/cp/${cp}`);
+      return res.data.body;
+    },
 
     async getTresorerieByAssoId(id: number) {
       const res = await axiosInstance.get(`${ApiUrlAssos}/${id}/tresorerie`);
@@ -37,6 +41,10 @@ export function useAssoApi() {
     },
     async getAllTresorieByAssociations(id: number){
       const res = await axiosInstance.get(`${ApiUrlAssos}/${id}/tresorerie`);
+      return res.data.body;
+    },
+    async getAllAssociation(){
+      const res = await axiosInstance.get(`${ApiUrlAssos}`);
       return res.data.body;
     }
   };

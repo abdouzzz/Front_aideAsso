@@ -3,9 +3,9 @@
     <div class="card">
       <Toolbar class="mb-6">
         <template #start>
-          <PButton label="New" icon="pi pi-plus" class="mr-2" @click="openNew" />
+          <PButton label="Nouveau membre" icon="pi pi-plus" class="mr-2" @click="openNew" />
           <PButton
-            label="Delete"
+            label="Supprimer"
             icon="pi pi-trash"
             severity="danger"
             outlined
@@ -24,12 +24,12 @@
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 15, 25]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} membres"
+        currentPageReportTemplate="Affiche {first} à {last} de {totalRecords} membres"
       >
         <template #header>
-          <div class="flex flex-wrap gap-2 items-center justify-between" style="justify-content:space-between!important align-items:baseline">
+          <div class="flex" style="justify-content:space-between; align-items:baseline">
             <h4 class="m-0">Gérer les bénévoles</h4>
-            <InputText v-model="filters['global'].value" placeholder="Search..." />
+            <InputText v-model="filters['global'].value" placeholder="Rechercher" />
           </div>
         </template>
 
@@ -38,6 +38,7 @@
         <Column header="Image">
           <template #body="slotProps">
             <img
+              v-if="slotProps.data.image"
               :src="`https://primefaces.org/cdn/primevue/images/membre/${slotProps.data.image}`"
               :alt="slotProps.data.image"
               class="rounded"

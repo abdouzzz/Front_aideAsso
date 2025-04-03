@@ -87,30 +87,25 @@ const menu = ref([
     icon: 'pi pi-fw pi-sitemap',
     items: [
       {
+        label: 'Tableau de bord',
+        icon: 'pi pi-fw pi-chart-line', // Tableau de bord -> Représente des statistiques ou un aperçu
+        to: '/tableau-de-bord',
+      },
+      {
         label: 'Informations',
-        icon: 'pi pi-cog',
+        icon: 'pi pi-fw pi-info-circle', // Informations -> Représente un symbole d'information
         to: '/asso-detail',
       },
       {
         label: 'Bénévoles',
-        icon: 'pi pi-users',
+        icon: 'pi pi-fw pi-users', // Bénévoles -> Représente des groupes de personnes
         to: '/asso-benevoles',
       },
       {
-        label: 'Classement',
-        icon: 'pi pi-sitemap',
+        label: 'Trésorerie',
+        icon: 'pi pi-fw pi-wallet', // Trésorerie -> Représente un portefeuille ou les finances
         to: '/tresorerie-detail',
-      },
-      {
-        label: 'Calendrier',
-        icon: 'pi pi-calendar',
-        to: '/calendrier',
-      },
-      {
-        label: 'Scores',
-        icon: 'pi pi-stopwatch',
-        to: '/score',
-      },
+      }
     ],
   },
 ]);

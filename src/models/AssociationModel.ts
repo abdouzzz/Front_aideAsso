@@ -7,6 +7,9 @@ export default interface Association {
   description: string; // Description de l'association
   email: string; // Email de l'association
   telephone: string; // Numéro de téléphone de l'association
+  adresse:string,
+  code_postal:number,
+  ville:string,
   date_pub_jo: Date;
   user_id: number;
 }

@@ -8,7 +8,7 @@
           v-if="associationData.logo"
           :src="'data:image/png;base64,' + associationData.logo"
           alt="Tournament Image"
-          :style="{ width: '50%', height: 'auto' }"
+          :style="{ width: '15%', height: 'auto' }"
         />
         <FileUpload
           v-model="associationData.logo"
@@ -65,6 +65,18 @@
       <div class="field">
         <label for="adresse">Adresse</label>
         <PTextarea id="adresse" v-model="associationData.adresse" placeholder="Adresse" rows="3" />
+      </div>
+
+      <!-- Code postal -->
+      <div class="field">
+        <label for="code_postal">Code Postal</label>
+        <InputNumber id="code_postal" v-model="associationData.code_postal" placeholder="Adresse" />
+      </div>
+
+      <!-- Ville -->
+      <div class="field">
+        <label for="ville">Ville</label>
+        <InputText id="ville" v-model="associationData.ville" placeholder="Adresse" />
       </div>
 
       <!-- Objet (Description) -->

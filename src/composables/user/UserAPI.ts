@@ -21,7 +21,8 @@ export function useUserApi() {
       lastName: string,
       email: string,
       password: string,
-      confirmPassword: string
+      confirmPassword: string,
+      photo: string,
     ) {
       const res = await axiosInstance.post(`${ApiUrlUsers}/register`, {
         firstName,
@@ -29,6 +30,7 @@ export function useUserApi() {
         email,
         password,
         confirmPassword,
+        photo
       });
       return res.data.body;
     },

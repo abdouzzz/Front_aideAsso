@@ -17,6 +17,19 @@ export function useAssoService() {
         return 'Erreur lors de la récupération des données de l\'association.';
       }
     },
+    async getAssociationsByCp(cp: number) {
+      try {
+        const response = await assoApi.getAssociationsByCp(cp);
+        if (response) {
+          return response;  // Retourne les données de l'association si l'appel est réussi
+        } else {
+          return 'Association non trouvée.';
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération de l\'association :', error);
+        return 'Erreur lors de la récupération des données de l\'association.';
+      }
+    },
 
     async getTresorerieByAssoId(id: number) {
       try {
@@ -110,5 +123,20 @@ export function useAssoService() {
         return 'Erreur lors de la création de la Tresorie.';
       }
     },
+    async getAllAssociation() {
+      try {
+        const response = await assoApi.getAllAssociation();
+        if (response) {
+          console.log(response);
+          return response;
+        } else {
+          return 'Échec de la recupereation association.';
+        }
+      } catch (error) {
+        console.error('Erreur lors de la recupereation des associations :', error);
+        return 'Erreur lors de la création de l\'association.';
+      }
+    },
+    
   };
 }

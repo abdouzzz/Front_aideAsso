@@ -2,28 +2,31 @@
   <div class="btn-top-association">
     <PButton label="Nouvelle association" icon="pi pi-plus" iconPos="right" @click="showDialog = true" />
   </div>
-  <div class="container" v-if="!isLoading">
+  <div class="container mt-4" v-if="!isLoading">
     <div class="grid-container">
       <div class="grid-item" v-for="association in associationListe" :key="association.association_id">
-        <Card style="width: 100%; overflow: hidden; height: 100%">
+         <Card style="width: 100%; overflow: hidden; height: 100%">
           <template #header>
-            <img
-              v-if="association.logo"
-              :src="'data:image/png;base64,' + association.logo"
-              alt="Tournament Image"
-              :style="{ width: '50%', height: 'auto' }"
-            />
+            <div class="flex align-items-center gap-4 p-3">
+              <img v-if="association.logo" :src="'data:image/png;base64,' + association.logo" alt="Tournament Logo"
+                style="width: 40px;border-radius: 8px;" />
+              <h2 style="margin: 0; font-size: 1.5rem; color: #333; font-weight: bold;">
+                {{ association.nom }}
+              </h2>
+            </div>
           </template>
-          <template #title>{{ association.nom }}</template>
-          <template #subtitle>{{ association.date_pub_jo }}</template>
+          <template #subtitle>
+            <span style="font-size: 0.9rem; color: #666;">{{ association.date_pub_jo }}</span>
+          </template>
           <template #content>
-            <p class="m-0 capitalize">
+            <p style="font-size: 1rem; color: #555; line-height: 1.5; margin: 10px 0;">
               {{ association.description.slice(0, 200) + '...' }}
             </p>
           </template>
           <template #footer>
-            <div class="flex gap-4 mt-1">
-              <PButton @click="assoDetail(association.association_id)" label="Modifier" severity="secondary" outlined class="w-full" />
+            <div class="flex justify-content-end p-3">
+              <PButton @click="assoDetail(association.association_id)" label="En savoir plus" severity="secondary"
+                outlined style="font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 5px" />
             </div>
           </template>
         </Card>
@@ -64,6 +67,12 @@
           <InputText v-model="newAssociation.page_web_url" id="associationPageWeb" :disabled="false" />
           <label for="associationDatePubJO">Date de publication JO</label>
           <InputText v-model="newAssociation.date_pub_jo" id="associationDatePubJO" :disabled="true" />
+          <label for="adresse">Adresse</label>
+          <InputText v-model="newAssociation.adresse" id="adresse" :disabled="true" />
+          <label for="code_postal">Code postal</label>
+          <InputText v-model="newAssociation.code_postal" id="code_postal" :disabled="true" />
+          <label for="ville">Ville</label>
+          <InputText v-model="newAssociation.ville" id="ville" :disabled="true" />
         </div>
         <div class="p-dialog-footer mt-3">
           <PButton label="Annuler" icon="pi pi-times" class="p-button-text" @click="resetDialog" />
@@ -191,6 +200,9 @@ const fetchAssociationData = async () => {
         newAssociation.value.email = data.coordonnees.courriel || '';
         newAssociation.value.telephone = data.coordonnees.telephone || '';
         newAssociation.value.page_web_url = data.page_web_url || '';
+        newAssociation.value.adresse = data.coordonnees.adresse_siege.num_voie + " " + data.coordonnees.adresse_siege.type_voie + " " + data.coordonnees.adresse_siege.voie || '';
+        newAssociation.value.code_postal = data.coordonnees.adresse_siege.cp || '';
+        newAssociation.value.ville = data.coordonnees.adresse_siege.commune || '';
         newAssociation.value.date_pub_jo = new Date(data.identite.date_pub_jo) || new Date();  // Récupère la date de publication
       }
     } catch (error) {

@@ -46,6 +46,15 @@
           <button @click="addEmail('@outlook.com')">@outlook.com</button>
           <button @click="addEmail('@aol.com')">@aol.com</button>
         </div>
+         <label for="photo">Photo de profil</label>
+          <FileUpload
+            class="display:block;"
+            v-model="photo"
+            :multiple="false"
+            accept="image/*"
+            :maxFileSize="1000000000000"
+            @select="onSelectedFile($event)"
+          />
       </div>
 
       <div class="in">
@@ -84,9 +93,9 @@
         <a href="">Mot de passe oublié ? </a>
       </div>
 
-      <button class="log" @click="signup">Se connecter</button>
+      <button class="log" @click="signup">S'inscrire</button>
 
-      <span>Déja inscrit ? <a href="/login">Se connecter</a> </span>
+      <span class="span">Déja inscrit ? <a href="/login">Se connecter</a> </span>
     </div>
   </div>
   <Toast />
@@ -103,6 +112,7 @@ const toast = useToast();
 
 const password = ref('');
 const nom = ref('');
+const photo = ref('')
 const prenom = ref('');
 const mail = ref('');
 const password_confirmation = ref('');
@@ -113,9 +123,28 @@ const userService = useUserService();
 function addEmail(suffix: string) {
   mail.value += suffix;
 }
+function onSelectedFile(event: any) {
+  const file = event.files[0];
 
+  const reader = new FileReader();
+
+  reader.onloadend = function () {
+    // Convertir le Blob en une chaîne de caractères
+    const base64String = reader?.result as string | null;
+
+    if (base64String) {
+      const [, data] = base64String.split(',');
+      // Enregistrer la chaîne de caractères dans votre objet ou l'envoyer au serveur
+      photo.value = data;
+      console.log(photo.value);
+    }
+  };
+
+  // Lire le contenu du fichier en tant que Blob
+  reader.readAsDataURL(file);
+}
 async function signup() {
-  const response = await userService.createUserAccount(nom.value, prenom.value, mail.value, password.value, password_confirmation.value);
+  const response = await userService.createUserAccount(nom.value, prenom.value, mail.value, password.value, password_confirmation.value, photo.value);
   console.log(response);
   if (response == true) {
     toast.add({ severity: 'success', summary: 'Succès', detail: 'Vous êtes connecté', life: 3000 });
@@ -142,7 +171,8 @@ async function signup() {
   background-color: #fff;
   display: flex;
   border-radius: 1em;
-  width: 30vw;
+  /* width: 30vw; */
+  margin:0 20px 0 20px;
   flex-direction: column;
   padding: 2em;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -241,6 +271,7 @@ async function signup() {
 }
 .box .in .button_action {
   display: flex;
+  flex-wrap:wrap;
   flex-direction: row;
   margin: 0.5em 0;
 }
@@ -269,12 +300,12 @@ async function signup() {
 .box .check_bar div input[type='checkbox'] {
   margin: 0 1em;
 }
-.box span {
+.box .span {
   text-align: center;
   margin: 1em 0;
   color: #677083;
 }
-.box span a {
+.box .span a {
   color: #000;
 }
 .box .password_bar {
@@ -331,4 +362,11 @@ async function signup() {
   background-color: #fff;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 0px 0px 0px, rgba(60, 64, 67, 0.15) 0px 0px 3px 0px;
 } /*# sourceMappingURL=style.css.map */
+
+.p-fileupload{
+  display:block!important;
+}
+.p-fileupload input{
+  display:none!important;
+}
 </style>

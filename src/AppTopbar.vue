@@ -10,7 +10,25 @@
     <div class="flex justify-content-center" v-if="!isHomePage">
       <Breadcrumb :home="home" :model="fileAriane" />
     </div>
+    <div class="flex justify-center ml-8">
+      <AutoComplete v-model="associationSelected" optionLabel="nom" placeholder="Chercher une association ..."
+        :suggestions="associationFiltred" @complete="search">
+        <template #option="slotProps">
+          <router-link :to="`/asso-search-detail/${slotProps.option.id}`">
+            <div class="flex items-center space-x-2">
+              <img v-if="slotProps.option.logo" :src="'data:image/png;base64,' + slotProps.option.logo"
+                :alt="slotProps.option.nom" style="width: 15px;" class="mr-3" />
+              <div class="text-lg font-medium">{{ slotProps.option.nom }}</div> <!-- Texte plus grand -->
+            </div>
+          </router-link>
 
+
+        </template>
+        <template #header>
+          <div class="font-medium px-3 py-2">Associations disponible</div>
+        </template>
+      </AutoComplete>
+    </div>
     <button
       class="p-link layout-topbar-menu-button layout-topbar-button"
       v-styleclass="{
@@ -43,11 +61,15 @@
         <!-- Content for logged-in user -->
         <div class="p-link layout-topbar-button">
           <router-link :to="user ? '' : '/login'" class="layout-topbar-logo">
-            <Avatar size="large" shape="circle">
-              <div @click="toggleReglage" v-if="user">
+            <Avatar v-if="photo" size="large" shape="circle" :image="'data:image/png;base64,' + photo"  @click="toggleReglage">
+            </Avatar>
+            <Avatar size="large" shape="circle" v-else-if="user" @click="toggleReglage">
+              <div>
                 {{ user.prenom?.charAt(0).toUpperCase() + '' + user.nom?.charAt(0).toUpperCase() }}
               </div>
-              <div v-else><em class="fas fa-user"></em></div>
+            </Avatar>
+            <Avatar size="large" shape="circle" v-else @click="toggleReglage">
+              <div><em class="fas fa-user"></em></div>
             </Avatar>
             <span class="ml-3">Profil</span>
           </router-link>
@@ -80,6 +102,22 @@
                 <label for="password" class="block mb-1">Mot de passe</label>
                 <Password v-model="password" id="password" toggleMask />
               </div>
+              <div class="mb-3">
+                <label for="photo" class="block mb-1">Photo de profil</label>
+                <img
+                  v-if="photo"
+                  :src="'data:image/png;base64,' + photo"
+                  alt="Tournament Image"
+                  :style="{ width: '50%', height: 'auto' }"
+                />
+                <FileUpload
+                  :v-model="'data:image/png;base64,' + user.photo"
+                  :multiple="false"
+                  accept="image/*"
+                  :maxFileSize="1000000"
+                  @select="onSelectedFile($event)"
+                />
+              </div>
             </div>
             <div class="mb-3" style="display: flex; justify-content: flex-end">
               <PButton label="Annuler" icon="pi pi-times" class="p-button-text" @click="toggleReglage" />
@@ -110,20 +148,39 @@ import router from '@/router';
 import { MenuItem } from 'primevue/menuitem';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
+import { Association } from '@/models/AssociationModel';
+import { useAssoService } from './composables/asso/AssoService';
 
 const confirm = useConfirm();
+const associationService = useAssoService();
 const toast = useToast();
 const route = useRoute();
 const userService = useUserService();
 const user = ref<UserModel | null>(null);
+const photo = ref();
 const isHomePage = ref(route.name === 'tableau-de-bord');
 const jwt = ref(false);
 const op = ref();
 const userR = ref();
 const password = ref('');
+const associationListe = ref<Association[]>([]);
+const associationSelected = ref<Association>();
+const associationFiltred = ref<Association[]>([]);
 
 const menuSidebarIsActive = ref(sessionStorage.getItem("idAsso") ? true : false);
   
+const search = (event) => {
+  setTimeout(() => {
+    if (!event.query.trim().length) {
+      associationFiltred.value = [...associationListe.value];
+    } else {
+      associationFiltred.value = associationListe.value.filter((asso: Association) => {
+        return asso.nom.toLowerCase().includes(event.query.toLowerCase());
+      });
+    }
+  }, 250);
+}
+
 const home = ref({
   icon: 'pi pi-home',
 });
@@ -152,6 +209,7 @@ async function fetchData() {
     try {
       const userData = await userService.getUserById(Number(sessionStorage.getItem('jwt')));
       user.value = userData;
+      photo.value = user.value.photo;
       console.log('User connected:', user.value);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -208,6 +266,7 @@ const iconeBouton = computed(() => {
 });
 
 onMounted(async () => {
+    associationListe.value = await associationService.getAllAssociation();
   fileAriane.value = [{ label: route.name?.toString(), to: { path: route.path } }];
   jwt.value = !!sessionStorage.getItem('jwt');
   if (window.localStorage.getItem('dark-mode')) {

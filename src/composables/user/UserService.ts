@@ -52,10 +52,11 @@ export function useUserService() {
       lastName: string, 
       email: string, 
       password: string, 
-      confirmPassword: string
+      confirmPassword: string,
+      photo: string
     ) {
       try {
-        const response = await userApi.createUserAccount(firstName, lastName, email, password, confirmPassword);
+        const response = await userApi.createUserAccount(firstName, lastName, email, password, confirmPassword, photo);
         console.log('test response',response);
         if (response) {
           sessionStorage.setItem('jwt', response.id);  // Stocke le token JWT (supposé renvoyé par l'API)
